@@ -9,7 +9,6 @@ if not exist "%~dp0strayacoin-qt.exe" (
     exit
 )
 
-:start
 :: Check if strayacoin-qt.exe is running
 tasklist /FI "IMAGENAME eq strayacoin-qt.exe" | find /i "strayacoin-qt.exe" && goto :continue || goto :open_wallet
 
