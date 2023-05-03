@@ -29,24 +29,4 @@ if %cores%==0 set "cores=1"
 for /L %%i in (1,1,%cores%) do (
     start "" cmd /k Call mine.bat
 )
-
-:: Continuously show CPU temperature using WMIC every 60 seconds until the user exits the script or the temperature exceeds 85 degrees
-:show_temp
-wmic /namespace:\\root\wmi PATH MSAcpi_ThermalZoneTemperature get CurrentTemperature > nul
-set /a temp=(%ERRORLEVEL% - 2732) / 10
-
-if %errorlevel% equ 0 (
-    echo CPU temperature: %temp%°C
-) else (
-    echo Unable to check CPU temperature using WMIC command.
-    echo Please install Core Temp or Open Hardware Monitor to monitor your CPU temperature and press any key to continue...
-    pause > nul
-    exit
-)
-
-if %temp% gtr 85 (
-    echo WARNING: The CPU temperature has exceeded 85°C. It is recommended to stop mining and check your cooling system.
-)
-
-timeout 60 > nul
-goto :show_temp
+exit
