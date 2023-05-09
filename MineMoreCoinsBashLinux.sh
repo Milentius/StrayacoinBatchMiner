@@ -39,12 +39,14 @@ if [[ "$term_emulator" == "gnome-terminal" ]]; then
   # If using gnome-terminal, open a new tab for each core
   for ((i = 1; i <= cores; i++)); do
     gnome-terminal --title="Strayacoin Miner $i" -- ./mine.sh
+    sleep 2
   done
 
 elif [[ "$term_emulator" == "konsole" ]]; then
   # If using konsole, open a new tab for each core
   for ((i = 1; i <= cores; i++)); do
     konsole --new-tab --title="Strayacoin Miner $i" --execute "./mine.sh"
+    sleep 2
   done
 
 elif [[ "$term_emulator" == "terminator" ]]; then
@@ -54,6 +56,7 @@ elif [[ "$term_emulator" == "terminator" ]]; then
   for ((i = 2; i <= cores; i++)); do
       command+=",\"./mine.sh\""
       layout+=",$layout"
+      sleep 2
   done
   terminator --layout="$layout" -e "bash -c 'echo -e \"\\033]0;Strayacoin Miner\\007$command\"'"
 
@@ -61,6 +64,7 @@ elif [[ "$term_emulator" == "xterm" || "$term_emulator" == "xterm-256color" || "
   # If using xterm, xterm-256color or rxvt-unicode, open a new window for each core
   for ((i = 1; i <= cores; i++)); do
     xterm -title "Strayacoin Miner $i" -e ./mine.sh &
+    sleep 2
   done
 
 else
