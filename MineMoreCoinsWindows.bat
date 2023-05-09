@@ -27,5 +27,6 @@ if %cores%==0 set "cores=1"
 :: Start mine.bat for each core selected
 for /L %%i in (1,1,%cores%) do (
     start "Strayacoin Miner %%i" cmd /k Call mine.bat
+    timeout 2
 )
 exit
