@@ -2,7 +2,6 @@
 setlocal enabledelayedexpansion
 
 :: Session Statistics
-set /a block_count=0
 set /a transaction_count=0
 set "total_earned=0.00000000"
 set "reward_per_payout=1.56250000"
@@ -30,17 +29,29 @@ for /l %%x in (1, 1, 999) do (
 
    set "end_time=%TIME%"
 
-   :: Update Mining Statistics
-   set /a block_count+=1
+   :: Check if a transaction was found
    if not "!result!"=="" (
       set /a transaction_count+=1
-      
-      :: Calculate total earnings (string-based for decimal precision)
-      for /f "tokens=1 delims=." %%a in ("!total_earned!") do set /a whole_part=%%a
-      for /f "tokens=2 delims=." %%b in ("!total_earned!") do set "decimal_part=%%b"
+
+      :: Fix decimal addition by using a floating-point trick
+      for /f "tokens=1-2 delims=." %%a in ("!total_earned!") do (
+         set /a whole_part=%%a
+         set "decimal_part=%%b"
+      )
+
       if not defined decimal_part set "decimal_part=00000000"
 
-      set /a whole_part+=1
+      set /a whole_reward=1
+      set "decimal_reward=56250000"
+
+      set /a "whole_part+=whole_reward"
+      set /a "decimal_part+=decimal_reward"
+
+      if !decimal_part! GEQ 100000000 (
+         set /a "whole_part+=1"
+         set /a "decimal_part-=100000000"
+      )
+
       set "total_earned=!whole_part!.!decimal_part!"
 
       set "result_text=Transaction Found"
@@ -61,17 +72,10 @@ for /l %%x in (1, 1, 999) do (
 
    :: Calculate Hash Rate (only if at least 2 timestamps exist)
    set /a "average_seconds=0"
-   if defined time2 (
-      set /a "diff1=time2-time1"
-   )
-   if defined time3 (
-      set /a "diff2=time3-time2"
-   )
-   if defined time4 (
-      set /a "diff3=time4-time3"
-   )
+   if defined time2 set /a "diff1=time2-time1"
+   if defined time3 set /a "diff2=time3-time2"
+   if defined time4 set /a "diff3=time4-time3"
 
-   :: Compute average mining time
    set /a count=0
    set /a sum=0
    if defined diff1 if !diff1! GTR 0 set /a sum+=diff1, count+=1
@@ -79,13 +83,10 @@ for /l %%x in (1, 1, 999) do (
    if defined diff3 if !diff3! GTR 0 set /a sum+=diff3, count+=1
    if !count! GTR 0 set /a "average_seconds=sum / count"
 
-   :: Calculate estimated hash rate (blocks per hour)
    set /a "hash_rate=0"
-   if !average_seconds! GTR 0 (
-      set /a "hash_rate=3600 / average_seconds"
-   )
+   if !average_seconds! GTR 0 set /a "hash_rate=3600 / average_seconds"
 
    :: Display Compact One-Line Output
-   echo | set /p="| Result: !result_text! | Hashrate: !hash_rate! blocks/hr | Blocks: !block_count! | Tx: !transaction_count! | Earned: !total_earned! coins"
+   echo | set /p="| Result: !result_text! | Hashrate: !hash_rate! blocks/hr | Tx: !transaction_count! | Earned: !total_earned! coins"
    echo.
 )
