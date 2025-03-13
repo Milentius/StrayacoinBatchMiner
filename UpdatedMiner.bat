@@ -1,5 +1,5 @@
 @echo off
-mode con: cols=130 lines=30
+mode con: cols=120 lines=30
 setlocal enabledelayedexpansion
 
 :: Session Statistics
@@ -85,6 +85,6 @@ for /l %%x in (1, 1, 999) do (
    set "estimated_hourly=!whole_earn!.!decimal_earn!"
 
    :: Display Compact One-Line Output
-   echo | set /p="| Result: !result_text! | Tx/Hr: !total_payouts! | Earned: !total_earned! coins | Est/Hr: !estimated_hourly! coins"
+   echo | set /p="| Result: !result_text! | Tx/Hr: !total_payouts! | Earned: !total_earned! | Est/Hr: !estimated_hourly!"
    echo.
 )
